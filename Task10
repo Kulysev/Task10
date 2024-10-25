@@ -1,0 +1,101 @@
+1 Задание
+#!/bin/bash
+
+user_list="users.txt"
+echo -e "user1\nuser2\nuser3" > $user_list
+
+# Выводим сообщение для каждого пользователя
+while IFS= read -r user; do
+    echo "Creating new user: useradd $user"
+done < "$user_list"
+
+2 Задание
+#!/bin/bash
+
+function view_user_info {
+    read -p "Введите имя пользователя: " username
+    getent passwd "$username" || echo "Пользователь $username не найден."
+}
+
+function create_user {
+    read -p "Введите имя нового пользователя: " username
+    if id "$username" &>/dev/null; then
+        echo "Пользователь $username уже существует."
+    else
+        sudo useradd "$username"
+        echo "Пользователь $username создан."
+    fi
+}
+
+function delete_user {
+    read -p "Введите имя пользователя для удаления: " username
+    if id "$username" &>/dev/null; then
+        sudo userdel "$username"
+        echo "Пользователь $username удален."
+    else
+        echo "Пользователь $username не найден."
+    fi
+}
+
+PS3="Выберите действие: "
+select option in "Просмотреть информацию о пользователе" "Создать пользователя" "Удалить пользователя" "Выход"; do
+    case $option in
+        "Просмотреть информацию о пользователе")
+            view_user_info
+            ;;
+        "Создать пользователя")
+            create_user
+            ;;
+        "Удалить пользователя")
+            delete_user
+            ;;
+        "Выход")
+            break
+            ;;
+        *)
+            echo "Неверный выбор. Пожалуйста, попробуйте снова."
+            ;;
+    esac
+done
+
+3 Задание
+#!/bin/bash
+
+read -p "Введите ваше имя: " username
+user_info=$(getent passwd "$username")
+
+if [ -n "$user_info" ]; then
+    echo "Информация о пользователе $username: $user_info"
+else
+    echo "Пользователь $username не найден."
+fi
+
+4 Задание
+backup_dir="/data"
+backup_file="/home/backup/backup_$(date +%Y%m%d).tar.gz"
+
+tar -czf "$backup_file" "$backup_dir"
+echo "Архив создан: $backup_file"
+
+5 Задание
+#!/bin/bash
+
+read -p "Введите название файла: " filename
+touch "$filename"
+
+read -p "Введите права доступа (например, 755): " permissions
+chmod "$permissions" "$filename"
+
+echo "Файл $filename создан с правами доступа $permissions."
+
+6 Задание
+#!/bin/bash
+
+read -p "Введите имя пользователя: " username
+shell_info=$(getent passwd "$username" | cut -d: -f7)
+
+if [ -n "$shell_info" ]; then
+    echo "Оболочка пользователя $username: $shell_info"
+else
+    echo "Пользователь $username не найден."
+fi
